@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 type Props = { items: { name: string }[]; func: (value: string) => void };
-function CurrenciesList({ items, func }: Props) {
+const CurrenciesList = memo(({ items, func }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
     console.log(newValue);
@@ -17,7 +17,7 @@ function CurrenciesList({ items, func }: Props) {
       ))}
     </select>
   );
-}
+});
 
 export default CurrenciesList;
 //{ name: String; value: number }[]
