@@ -1,18 +1,15 @@
 import React, { memo } from 'react';
 
-type Props = { items: { name: string }[]; func: (value: string) => void };
-const CurrenciesList = memo(({ items, func }: Props) => {
+type Props = { items: { name: string }[]; onChange: (value: string) => void };
+const CurrenciesList = memo(({ items, onChange }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
-    console.log(newValue);
-    func(newValue);
-    //console.log(e.target.value);
+    onChange(e.target.value);
   };
   return (
     <select className="form-select form-select-sm" onChange={handleChange}>
-      {items.map((name, index) => (
-        <option value={items[index].name} key={`${name}_${index}`}>
-          {items[index].name}
+      {items.map((element, index) => (
+        <option value={element.name} key={`${element}_${index}`}>
+          {element.name}
         </option>
       ))}
     </select>

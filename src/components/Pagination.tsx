@@ -1,23 +1,30 @@
-import { closeSync } from 'fs';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { CurrencyRate } from './types/CurrencyRate';
 
-type Props = { items: Array<Array<string | number>> };
+const ITEMS_PER_PAGE = 10;
+
+type Props = { items: Array<CurrencyRate> };
 function Pagination({ items }: Props) {
-  const arrButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]; // переделать динамически, добавить в state
-  const [showList, setShowList] = useState<Array<Array<string | number>>>([]);
+  const [countButtons, setCountButtons] = useState<Array<number>>([]);
+  const [showList, setShowList] = useState<Array<CurrencyRate>>([]);
 
-  //console.log('rerender', items);
   useEffect(() => {
-    //console.log('gggg', items);
-    let arr = items.slice(0, 10);
+    let countOfButtons: number = items.length / ITEMS_PER_PAGE;
+
+    let arrBut: Array<number> = [];
+    for (let i = 0; i < countOfButtons; i++) {
+      arrBut.push(i + 1);
+    }
+    setCountButtons(arrBut);
+
+    let arr = items.slice(0, ITEMS_PER_PAGE);
     setShowList(arr);
-    //console.log(arr);
   }, [items]);
 
   const onChangeList = (value: number) => {
-    let from = value * 10 - 10; // c
-    let to = value * 10 - 1; //до
-    let myArr = items.slice(from, to);
+    let from: number = value * ITEMS_PER_PAGE - ITEMS_PER_PAGE;
+    let to: number = value * ITEMS_PER_PAGE - 1;
+    let myArr: Array<CurrencyRate> = items.slice(from, to);
     setShowList(myArr);
   };
 
@@ -25,23 +32,23 @@ function Pagination({ items }: Props) {
     <div>
       <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div className="btn-group me-2" role="group" aria-label="First group">
-          {arrButtons.map((value, index) => (
+          {countButtons.map((value, index) => (
             <button
               type="button"
               className="btn btn-primary"
               key={`${value}_${index}`}
               onClick={() => onChangeList(value)}>
-              {arrButtons[index]}
+              {countButtons[index]}
             </button>
           ))}
         </div>
       </div>
       <ul className="list-group list-group-flush">
-        {showList.map((name, index) => (
-          <li key={`${name}_${index}`} className="list-group-item">
+        {showList.map((element, index) => (
+          <li key={`${element}_${index}`} className="list-group-item">
             <div className="row">
-              <div className="col-3">валюта: {showList[index][0]} </div>
-              <div className="col-3">курс: {showList[index][1]} </div>
+              <div className="col-3">валюта: {showList[index].name} </div>
+              <div className="col-3">курс: {showList[index].rate} </div>
             </div>
           </li>
         ))}

@@ -1,41 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import CurrenciesList from '../components/CurrenciesList';
-import listOfCurrencies from '../listOfCurrencies';
-import ReactPaginate from 'react-paginate';
-import PaginationTest from '../components/Pagination';
+import listOfCurrencies from '../components/types/listOfCurrencies';
 import Pagination from '../components/Pagination';
+import { allCurencies } from '../api/allCurrecies';
+import { CurrencyRate } from '../components/types/CurrencyRate';
 
 function CurrentRate() {
-  const [mainСurrency, setMainСurrency] = useState<string>('USD'); // главная валюта
-  const [otherСurrency, setOtherСurrency] = useState<Array<Array<string | number>>>([]); // валюта,коэф,размер массива (хз как убрать)   name: string }[]
+  const [mainСurrency, setMainСurrency] = useState<string>('USD');
+  const [otherСurrency, setOtherСurrency] = useState<Array<CurrencyRate>>([]);
 
-  const setNewValue = (name: string) => {
+  const setNewValue = async (name: string) => {
+    let allCur = await allCurencies(name);
+    setOtherСurrency(allCur);
     setMainСurrency(name);
-    fetch(`https://api.fastforex.io/fetch-all?from=${name}&api_key=a6915b7194-c1fd9d1141-re1bwh`)
-      .then((response) => response.json())
-      .then((res) => {
-        const currenciesArray: any = Object.entries(res.results); // проблема с типом данных
-        console.log(currenciesArray);
-        setMainСurrency(res.base);
-        setOtherСurrency(currenciesArray);
-      });
   };
 
   useEffect(() => {
-    fetch('https://api.fastforex.io/fetch-all?from=USD&api_key=a6915b7194-c1fd9d1141-re1bwh')
-      .then((response) => response.json())
-      .then((res) => {
-        const currenciesArray: any = Object.entries(res.results);
-        //console.log(currenciesArray);
-        setMainСurrency(res.base);
-        setOtherСurrency(currenciesArray);
-      });
+    setNewValue('USD');
   }, []);
   return (
     <div className="container">
       <div className="row">
         <div className="col">
-          <CurrenciesList items={listOfCurrencies} func={setNewValue} />
+          <CurrenciesList items={listOfCurrencies} onChange={setNewValue} />
         </div>
         <div className="col"></div>
         <div className="col">Выбранная Валюта : {mainСurrency}</div>
@@ -51,3 +38,12 @@ function CurrentRate() {
 }
 
 export default CurrentRate;
+
+// fetch(`https://api.fastforex.io/fetch-all?from=${name}&api_key=a6915b7194-c1fd9d1141-re1bwh`)
+// .then((response) => response.json())
+// .then((res) => {
+//   const currenciesArray: any = Object.entries(res.results);
+//   console.log(currenciesArray);
+//   setMainСurrency(res.base);
+//   setOtherСurrency(currenciesArray);
+// });
